@@ -64,7 +64,8 @@ func (a Aws) String() string {
 }
 
 func CreateSettings(config *configs.Config) (*Settings, error) {
-	params := &Params{RequestInterval: defaultRequestInterval, S3Upload: true, SendMail: true, SenderMail: defaultSenderMail, Dryrun: false}
+	params := &Params{RequestInterval: defaultRequestInterval, S3Upload: true, SendMail: true,
+		SenderMail: defaultSenderMail, Dryrun: false}
 	openvpn := &OpenVpn{EasyRsaPath: defaultEasyRsaPath,
 		EasyRsaKeyDirectory: defaultEasyRsaKeyDirectory,
 		OpenVpnServerPath:   defaultOpenVpnServerPath}

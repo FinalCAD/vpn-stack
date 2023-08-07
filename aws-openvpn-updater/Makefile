@@ -1,6 +1,6 @@
 PROJECT_NAME := "aws-openvpn-updater"
-GOMAIN := "main.go"
 GO_DEST := "build"
+GOMAIN := "./cmd/aws-openvpn-updater/main.go"
 
 default: build
 
