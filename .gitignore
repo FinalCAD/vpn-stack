@@ -18,6 +18,7 @@ vendor/
 
 # Build
 **/build
+**/dist
 
 #.env
 .env
