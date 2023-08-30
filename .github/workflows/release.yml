@@ -23,6 +23,6 @@ jobs:
         distribution: goreleaser
         version: latest
         args: release --clean
-        env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         workdir: ${{ github.workspace }}/aws-openvpn-updater
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
