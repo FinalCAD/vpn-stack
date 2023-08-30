@@ -5,9 +5,6 @@ on:
     tags:
       - '*'
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -26,3 +23,4 @@ jobs:
         args: release --clean
         env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        workdir: aws-openpvn-updater
