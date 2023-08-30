@@ -1,14 +1,16 @@
 package app
 
 import (
+	"errors"
 	"fmt"
+	"time"
+
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/awssdk"
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/configs"
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/openvpn"
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/settings"
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/utils"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type App struct {
@@ -28,6 +30,13 @@ func Create(cfg *configs.Config) (*App, error) {
 		return nil, err
 	}
 	log.Debug().Msgf("Settings: %s", settings)
+
+	if settings.Params.SendMail &&
+		(settings.Params.SenderMail == "" || settings.Params.Domain == "") {
+		errtxt := "error in configuration file, if send-mail is enable you must provide a domain and a sender"
+		log.Error().Err(err).Msg(errtxt)
+		return nil, errors.New(errtxt)
+	}
 
 	openvpncfg := openvpn.CreateOpenVpnConfig(settings.OpenVpn)
 	awssdkcfg, err := awssdk.CreateIAMConfig(settings.Aws)

@@ -1,6 +1,6 @@
 # vpn-stack
 
-OpenVpn stack for finalcad, contains terragrunt deploy and service to synchronise IAM and OpenVpn Users.
+OpenVpn stack service to synchronise IAM and OpenVpn Users.
 
 ## aws-openvpn-updater
 
@@ -10,28 +10,28 @@ Golang binary running on openvpn server as a service. Check at interval if all u
 
 - `debug` : Enable debug logging, default : false
 - `config` : Path to toml configuration file, default: ./config.toml
-- `env` : Finalcad environment, required
+- `env` : Environment, required
 
 ### Configuration file
 
 | key  	| Details  	| Default\Required  	|
 |---	|---	    |---	    |
 | **settings** |
-| domain            | SES domain                                    | finalcad.com                 |
-| dry-run           | Enable Dry-run (disable openvpn file change)  | false                        |
-| request-interval  | Internal loop for synchronization in seconds  | 300                          |
-| s3-upload         | Activate S3 upload of openvpn configuration   | truee                        |
-| sender-mail       | Default mail from                             | infra@finalcad.com           |
-| send-mail         | Activate SES to send presign-url              | true                         |
+| domain            | SES domain                                    | required when send-mail is true |
+| dry-run           | Enable Dry-run (disable openvpn file change)  | false                           |
+| request-interval  | Internal loop for synchronization in seconds  | 300                             |
+| s3-upload         | Activate S3 upload of openvpn configuration   | true                            |
+| sender            | Default mail from                             | required when send-mail is true |
+| send-mail         | Activate SES to send presign-url              | true                            |
 | **openvpn** |
-| easy-rsa-path     | path from root to easy-rsa directory          | /etc/openvpn/server/easy-rsa |
-| key-directory     | name of directory in easy-rsa that holds keys | pki                          |
-| server-path       | path from root to openvpn server              | /etc/openvpn/server          |
+| easy-rsa-path     | path from root to easy-rsa directory          | /etc/openvpn/server/easy-rsa    |
+| key-directory     | name of directory in easy-rsa that holds keys | pki                             |
+| server-path       | path from root to openvpn server              | /etc/openvpn/server             |
 | **aws** |
-| profile           | aws profile to assume                         | none                         |
-| region            | aws region                                    | eu-central-1                 |
-| s3-bucket-name    | aws s3 bucket name                            | required                     |
-| vpn-group         | aws IAM group name                            | requied                      |
+| profile           | aws profile to assume                         | none                            |
+| region            | aws region                                    | eu-central-1                    |
+| s3-bucket-name    | aws s3 bucket name                            | required                        |
+| vpn-group         | aws IAM group name                            | required                        |
 
 #### Exemple
 

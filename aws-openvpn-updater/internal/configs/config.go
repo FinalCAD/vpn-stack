@@ -3,6 +3,7 @@ package configs
 import (
 	"flag"
 	"fmt"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -20,7 +21,7 @@ func (c Config) String() string {
 func InitApp() *Config {
 	//Param
 	debug := flag.Bool("debug", false, "sets log level to debug")
-	environment := flag.String("env", "", "finalcad environment")
+	environment := flag.String("env", "", "environment")
 	configFile := flag.String("config", "config.toml", "toml configuration file")
 	flag.Parse()
 	cfg := &Config{Debug: *debug, ConfigFile: *configFile, Environment: *environment}

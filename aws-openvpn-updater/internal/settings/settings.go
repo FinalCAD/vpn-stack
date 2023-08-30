@@ -2,9 +2,10 @@ package settings
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/configs"
 	"github.com/pelletier/go-toml/v2"
-	"os"
 )
 
 const (
@@ -13,8 +14,8 @@ const (
 	defaultEasyRsaKeyDirectory string = "pki"
 	defaultOpenVpnServerPath   string = "/etc/openvpn/server"
 	defaultRegion              string = "eu-central-1"
-	defaultSenderMail          string = "infra@finalcad.com"
-	defaultDomain              string = "finalcad.com"
+	defaultSenderMail          string = ""
+	defaultDomain              string = ""
 )
 
 type Settings struct {
@@ -33,7 +34,7 @@ type Params struct {
 	Dryrun          bool   `toml:"dry-run"`
 	RequestInterval int    `toml:"request-interval"`
 	S3Upload        bool   `toml:"s3-upload"`
-	SenderMail      string `toml:"sender-mail"`
+	SenderMail      string `toml:"sender"`
 	SendMail        bool   `toml:"send-mail"`
 }
 

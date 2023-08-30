@@ -3,6 +3,10 @@ package awssdk
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/settings"
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/utils"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -13,9 +17,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"github.com/rs/zerolog/log"
-	"os"
-	"strings"
-	"time"
 )
 
 type AwsSdkConfig struct {
@@ -105,7 +106,7 @@ func (awsSdkCfg *AwsSdkConfig) SaveConfS3(env string, user string, filePath stri
 }
 
 func (awsSdkCfg *AwsSdkConfig) SendMail(env string, user User, urlStr string, domain string, senderMail string) error {
-	subject := fmt.Sprintf("Your Finalcad VPN access to %s", env)
+	subject := fmt.Sprintf("Your VPN access to %s", env)
 	recipient, _ := utils.ExtractEmail(user.Account, domain)
 	sender := senderMail
 
