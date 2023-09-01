@@ -11,11 +11,13 @@ import (
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/utils"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/rs/zerolog/log"
 )
 
@@ -38,14 +40,23 @@ func CreateIAMConfig(awsconfig *settings.Aws) (*AwsSdkConfig, error) {
 	var err error
 
 	if awsconfig.Profile != "" {
+		log.Debug().Msgf("Aws config using profile: %v", awsconfig.Profile)
 		cfg, err = config.LoadDefaultConfig(context.TODO(),
 			config.WithSharedConfigProfile(awsconfig.Profile), config.WithRegion(awsconfig.Region))
 	} else {
+		log.Debug().Msgf("Aws config using default role: %v", awsconfig.Profile)
 		cfg, err = config.LoadDefaultConfig(context.TODO(), config.WithRegion(awsconfig.Region))
 	}
 
 	if err != nil {
 		return nil, err
+	}
+
+	if awsconfig.RoleToAssume != "" {
+		log.Debug().Msgf("Aws config using assume role: %v", awsconfig.RoleToAssume)
+		stsClient := sts.NewFromConfig(cfg)
+		stsCreds := stscreds.NewAssumeRoleProvider(stsClient, awsconfig.RoleToAssume)
+		cfg.Credentials = aws.NewCredentialsCache(stsCreds)
 	}
 
 	return &AwsSdkConfig{AwsConfig: awsconfig, SdkConfig: cfg}, nil

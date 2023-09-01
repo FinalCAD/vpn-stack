@@ -32,6 +32,7 @@ Golang binary running on openvpn server as a service. Check at interval if all u
 | region            | aws region                                    | eu-central-1                    |
 | s3-bucket-name    | aws s3 bucket name                            | required                        |
 | vpn-group         | aws IAM group name                            | required                        |
+| assume-role       | aws assume role                               | none                            |
 
 #### Exemple
 

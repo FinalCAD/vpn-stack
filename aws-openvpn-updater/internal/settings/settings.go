@@ -54,14 +54,15 @@ func (o OpenVpn) String() string {
 }
 
 type Aws struct {
-	Profile    string `toml:"profile"`
-	Region     string `toml:"region"`
-	BucketName string `toml:"s3-bucket-name"`
-	VpnGroup   string `toml:"vpn-group"`
+	Profile      string `toml:"profile"`
+	BucketName   string `toml:"s3-bucket-name"`
+	Region       string `toml:"region"`
+	RoleToAssume string `toml:"assume-role"`
+	VpnGroup     string `toml:"vpn-group"`
 }
 
 func (a Aws) String() string {
-	return fmt.Sprintf("[ Profile: %v, Region: %v, BucketName: %v, VpnGroup: %v  ]", a.Profile, a.Region, a.BucketName, a.VpnGroup)
+	return fmt.Sprintf("[ Profile: %v, Region: %v, BucketName: %v, VpnGroup: %v , RoleToAssume: %v ]", a.Profile, a.Region, a.BucketName, a.VpnGroup, a.RoleToAssume)
 }
 
 func CreateSettings(config *configs.Config) (*Settings, error) {
@@ -70,7 +71,7 @@ func CreateSettings(config *configs.Config) (*Settings, error) {
 	openvpn := &OpenVpn{EasyRsaPath: defaultEasyRsaPath,
 		EasyRsaKeyDirectory: defaultEasyRsaKeyDirectory,
 		OpenVpnServerPath:   defaultOpenVpnServerPath}
-	aws := &Aws{Profile: "", Region: defaultRegion}
+	aws := &Aws{Profile: "", Region: defaultRegion, RoleToAssume: ""}
 	settings := &Settings{Config: config, Params: params, OpenVpn: openvpn, Aws: aws}
 	cfg, err := os.ReadFile(config.ConfigFile)
 	if err != nil {
