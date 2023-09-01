@@ -91,7 +91,7 @@ func (app *App) createUsers() {
 				break
 			}
 		}
-		if found != true {
+		if !found {
 			app.createUser(user)
 		}
 	}
@@ -100,20 +100,25 @@ func (app *App) createUsers() {
 func (app *App) createUser(user awssdk.User) {
 	log.Info().Msgf("Adding new user: %s", user.Name)
 	var presignUrl string
+	var filePath string
 	var err error
-	filePath, err := app.OpenVpnConfig.CreateUser(user.Name, app.Settings.Params.Dryrun)
-	if err != nil {
-		log.Error().Err(err).Msgf("Error creating openvpn client config: %s", user.Name)
-		return
+	if !app.Settings.Params.Dryrun {
+		filePath, err = app.OpenVpnConfig.CreateUser(user.Name)
+		if err != nil {
+			log.Error().Err(err).Msgf("Error creating openvpn client config: %s", user.Name)
+			return
+		}
+	} else {
+		log.Info().Msgf("Dry run creating config for user: %s", user.Name)
 	}
-	if app.Settings.Params.S3Upload {
+	if app.Settings.Params.S3Upload && !app.Settings.Params.Dryrun {
 		presignUrl, err = app.AwsSdkConfig.SaveConfS3(app.Settings.Config.Environment, user.Name, filePath)
 		if err != nil {
 			log.Error().Err(err).Msgf("Error s3 upload: %s", user.Name)
 			return
 		}
 	}
-	if app.Settings.Params.SendMail {
+	if app.Settings.Params.SendMail && !app.Settings.Params.Dryrun {
 		err = app.AwsSdkConfig.SendMail(app.Settings.Config.Environment, user, presignUrl,
 			app.Settings.Params.Domain, app.Settings.Params.SenderMail)
 		if err != nil {
@@ -134,7 +139,7 @@ func (app *App) deleteUsers() {
 				break
 			}
 		}
-		if found != true {
+		if !found {
 			app.deleteUser(account.Name)
 		}
 	}
@@ -143,12 +148,16 @@ func (app *App) deleteUsers() {
 func (app *App) deleteUser(user string) {
 	log.Info().Msgf("Deleting existing user: %s", user)
 	var err error
-	err = app.OpenVpnConfig.DeleteUser(user, app.Settings.Params.Dryrun)
-	if err != nil {
-		log.Error().Err(err).Msgf("Error revoking openvpn client config: %s", user)
-		return
+	if !app.Settings.Params.Dryrun {
+		err = app.OpenVpnConfig.DeleteUser(user)
+		if err != nil {
+			log.Error().Err(err).Msgf("Error revoking openvpn client config: %s", user)
+			return
+		}
+	} else {
+		log.Info().Msgf("Dry run deleting config for user: %s", user)
 	}
-	if app.Settings.Params.S3Upload {
+	if app.Settings.Params.S3Upload && !app.Settings.Params.Dryrun {
 		err = app.AwsSdkConfig.RemoveConfS3(app.Settings.Config.Environment, user)
 		log.Error().Err(err).Msgf("Error removing S3 file client config: %s", user)
 		return
