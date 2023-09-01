@@ -21,6 +21,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const mailTXT string = `
+VPN access :
+
+In this email you'll find a link to download your configuration file for your personal vpn acces.
+Do not share this information with anyone, including colleagues.
+Those credentials are unique to you and must not be disclosed under any circumstances.
+This link will be invalidated during the next hour
+
+`
+
 type AwsSdkConfig struct {
 	AwsConfig *settings.Aws
 	SdkConfig aws.Config
@@ -121,7 +131,7 @@ func (awsSdkCfg *AwsSdkConfig) SendMail(env string, user User, urlStr string, do
 	recipient, _ := utils.ExtractEmail(user.Account, domain)
 	sender := senderMail
 
-	message := "Download your configuration file for your personal vpn acces :\n" + urlStr
+	message := mailTXT + urlStr
 
 	emailInput := &ses.SendEmailInput{
 		Destination: &types.Destination{
