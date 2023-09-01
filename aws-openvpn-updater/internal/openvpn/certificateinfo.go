@@ -24,7 +24,7 @@ func CreateCertificateInfo(line string) *CertificateInfo {
 
 	name := strings.TrimPrefix(fields[4], "/CN=")
 
-	if name == "server" || fields[0] != "V" {
+	if name == "server" || name == "client" || fields[0] != "V" {
 		return nil
 	}
 
