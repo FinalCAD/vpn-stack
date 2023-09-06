@@ -15,7 +15,6 @@ const (
 	defaultOpenVpnServerPath   string = "/etc/openvpn/server"
 	defaultRegion              string = "eu-central-1"
 	defaultSenderMail          string = ""
-	defaultDomain              string = ""
 )
 
 type Settings struct {
@@ -30,7 +29,6 @@ func (s Settings) String() string {
 }
 
 type Params struct {
-	Domain          string `toml:"domain"`
 	Dryrun          bool   `toml:"dry-run"`
 	RequestInterval int    `toml:"request-interval"`
 	S3Upload        bool   `toml:"s3-upload"`

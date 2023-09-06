@@ -17,7 +17,6 @@ Golang binary running on openvpn server as a service. Check at interval if all u
 | key  	| Details  	| Default\Required  	|
 |---	|---	    |---	    |
 | **settings** |
-| domain            | SES domain                                    | required when send-mail is true |
 | dry-run           | Enable Dry-run (disable openvpn file change)  | false                           |
 | request-interval  | Internal loop for synchronization in seconds  | 300                             |
 | s3-upload         | Activate S3 upload of openvpn configuration   | true                            |

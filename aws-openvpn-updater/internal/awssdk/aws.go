@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/settings"
-	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/utils"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
@@ -64,8 +63,11 @@ func CreateIAMConfig(awsconfig *settings.Aws) (*AwsSdkConfig, error) {
 
 	if awsconfig.RoleToAssume != "" {
 		log.Debug().Msgf("Aws config using assume role: %v", awsconfig.RoleToAssume)
+		sessionDuration := time.Duration(6) * time.Hour
 		stsClient := sts.NewFromConfig(cfg)
-		stsCreds := stscreds.NewAssumeRoleProvider(stsClient, awsconfig.RoleToAssume)
+		stsCreds := stscreds.NewAssumeRoleProvider(stsClient, awsconfig.RoleToAssume, func(o *stscreds.AssumeRoleOptions) {
+			o.Duration = sessionDuration
+		})
 		cfg.Credentials = aws.NewCredentialsCache(stsCreds)
 	}
 
@@ -126,9 +128,9 @@ func (awsSdkCfg *AwsSdkConfig) SaveConfS3(env string, user string, filePath stri
 	return req.URL, nil
 }
 
-func (awsSdkCfg *AwsSdkConfig) SendMail(env string, user User, urlStr string, domain string, senderMail string) error {
+func (awsSdkCfg *AwsSdkConfig) SendMail(env string, user User, urlStr string, senderMail string) error {
 	subject := fmt.Sprintf("Your VPN access to %s", env)
-	recipient, _ := utils.ExtractEmail(user.Account, domain)
+	recipient, _ := awsSdkCfg.GetEmail(user.Account)
 	sender := senderMail
 
 	message := mailTXT + urlStr
@@ -172,4 +174,30 @@ func (awsSdkCfg *AwsSdkConfig) RemoveConfS3(env string, user string) error {
 		return err
 	}
 	return nil
+}
+
+func (awsSdkCfg *AwsSdkConfig) GetEmail(user string) (string, error) {
+	iamClient := iam.NewFromConfig(awsSdkCfg.SdkConfig)
+	input := &iam.ListUserTagsInput{
+		UserName: &user,
+	}
+
+	result, err := iamClient.ListUserTags(context.TODO(), input)
+	if err != nil {
+		return "", err
+	}
+
+	var emailTagValue string
+	for _, tag := range result.Tags {
+		if *tag.Key == "email" {
+			emailTagValue = *tag.Value
+			break
+		}
+	}
+
+	if emailTagValue == "" {
+		return "", fmt.Errorf("email tag not found for IAM user: %s", user)
+	}
+
+	return emailTagValue, nil
 }

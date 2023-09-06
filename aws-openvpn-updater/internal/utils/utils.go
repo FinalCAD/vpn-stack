@@ -1,12 +1,10 @@
 package utils
 
 import (
-	"errors"
 	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"syscall"
 )
@@ -81,15 +79,4 @@ func ReadCertificateFromFile(fileName string) (string, error) {
 
 	certificateContent := strings.Join(certificate, "\n")
 	return certificateContent, nil
-}
-
-func ExtractEmail(user string, domain string) (string, error) {
-	pattern := `^[a-zA-Z-]+\.[a-zA-Z-]+`
-	re := regexp.MustCompile(pattern)
-	matches := re.FindString(user)
-	mail := matches + "@" + domain
-	if len(mail) == (len(domain) + 1) {
-		return "", errors.New("Couldn't extract user email")
-	}
-	return mail, nil
 }

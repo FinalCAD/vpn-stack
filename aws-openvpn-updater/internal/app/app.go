@@ -31,9 +31,8 @@ func Create(cfg *configs.Config) (*App, error) {
 	}
 	log.Debug().Msgf("Settings: %s", settings)
 
-	if settings.Params.SendMail &&
-		(settings.Params.SenderMail == "" || settings.Params.Domain == "") {
-		errtxt := "error in configuration file, if send-mail is enable you must provide a domain and a sender"
+	if settings.Params.SendMail && settings.Params.SenderMail == "" {
+		errtxt := "error in configuration file, if send-mail is enable you must provide a sender"
 		log.Error().Err(err).Msg(errtxt)
 		return nil, errors.New(errtxt)
 	}
@@ -119,8 +118,7 @@ func (app *App) createUser(user awssdk.User) {
 		}
 	}
 	if app.Settings.Params.SendMail && !app.Settings.Params.Dryrun {
-		err = app.AwsSdkConfig.SendMail(app.Settings.Config.Environment, user, presignUrl,
-			app.Settings.Params.Domain, app.Settings.Params.SenderMail)
+		err = app.AwsSdkConfig.SendMail(app.Settings.Config.Environment, user, presignUrl, app.Settings.Params.SenderMail)
 		if err != nil {
 			log.Error().Err(err).Msgf("Error sending email: %s", user.Name)
 			return
