@@ -20,6 +20,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const sessionDuration time.Duration = time.Duration(6) * time.Hour
 const mailTXT string = `
 VPN access :
 
@@ -63,7 +64,6 @@ func CreateIAMConfig(awsconfig *settings.Aws) (*AwsSdkConfig, error) {
 
 	if awsconfig.RoleToAssume != "" {
 		log.Debug().Msgf("Aws config using assume role: %v", awsconfig.RoleToAssume)
-		sessionDuration := time.Duration(6) * time.Hour
 		stsClient := sts.NewFromConfig(cfg)
 		stsCreds := stscreds.NewAssumeRoleProvider(stsClient, awsconfig.RoleToAssume, func(o *stscreds.AssumeRoleOptions) {
 			o.Duration = sessionDuration
@@ -119,7 +119,7 @@ func (awsSdkCfg *AwsSdkConfig) SaveConfS3(env string, user string, filePath stri
 	req, err := presign.PresignGetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: &awsSdkCfg.AwsConfig.BucketName,
 		Key:    &key},
-		s3.WithPresignExpires(180*time.Minute))
+		s3.WithPresignExpires(sessionDuration))
 	if err != nil {
 		return "", err
 	}
