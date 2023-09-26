@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+	"regexp"
 	"text/template"
 	"time"
 
@@ -87,7 +88,7 @@ func (o *OpenVpnConfig) GetUser() error {
 	return nil
 }
 
-func (o *OpenVpnConfig) CreateUser(user string) (string, error) {
+func (o *OpenVpnConfig) CreateUser(user string, usefqdn bool) (string, error) {
 	log.Debug().Msgf("Creating config for user: %s", user)
 	var err error
 
@@ -109,6 +110,16 @@ func (o *OpenVpnConfig) CreateUser(user string) (string, error) {
 	configUser, err := CreateConfigUser(user, o.ClientCommonPath, o.CaPath, o.EasyRsaKeyDirectoryPath, o.ClientTlsCryptPath)
 	if err != nil {
 		return "", err
+	}
+	if usefqdn {
+		hostname, err := os.Hostname()
+		if err != nil {
+			return "", err
+		}
+		log.Debug().Msgf("Hostname: %s", hostname)
+		remotePattern := `remote\s+(\d+\.\d+\.\d+\.\d+)\s+(\d+)`
+		re := regexp.MustCompile(remotePattern)
+		configUser.ClientCommon = re.ReplaceAllString(configUser.ClientCommon, fmt.Sprintf("remote %s $2", hostname))
 	}
 	log.Debug().Msgf("Client config infos: %s", configUser)
 

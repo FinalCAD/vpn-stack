@@ -102,7 +102,7 @@ func (app *App) createUser(user awssdk.User) {
 	var filePath string
 	var err error
 	if !app.Settings.Params.Dryrun {
-		filePath, err = app.OpenVpnConfig.CreateUser(user.Name)
+		filePath, err = app.OpenVpnConfig.CreateUser(user.Name, app.Settings.Params.UseFqdn)
 		if err != nil {
 			log.Error().Err(err).Msgf("Error creating openvpn client config: %s", user.Name)
 			return

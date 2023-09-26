@@ -22,6 +22,7 @@ Golang binary running on openvpn server as a service. Check at interval if all u
 | s3-upload         | Activate S3 upload of openvpn configuration   | true                            |
 | sender            | Default mail from                             | required when send-mail is true |
 | send-mail         | Activate SES to send presign-url              | true                            |
+| use-fqdn          | Use fqdn instead of ip in configuration       | false
 | **openvpn** |
 | easy-rsa-path     | path from root to easy-rsa directory          | /etc/openvpn/server/easy-rsa    |
 | key-directory     | name of directory in easy-rsa that holds keys | pki                             |

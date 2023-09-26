@@ -2,6 +2,7 @@ package openvpn
 
 import (
 	"fmt"
+
 	"github.com/FinalCAD/vpn-stack/aws-openvpn-updater/internal/utils"
 )
 

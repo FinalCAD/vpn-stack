@@ -34,6 +34,7 @@ type Params struct {
 	S3Upload        bool   `toml:"s3-upload"`
 	SenderMail      string `toml:"sender"`
 	SendMail        bool   `toml:"send-mail"`
+	UseFqdn         bool   `toml:"use-fqdn"`
 }
 
 func (p Params) String() string {
@@ -65,7 +66,7 @@ func (a Aws) String() string {
 
 func CreateSettings(config *configs.Config) (*Settings, error) {
 	params := &Params{RequestInterval: defaultRequestInterval, S3Upload: true, SendMail: true,
-		SenderMail: defaultSenderMail, Dryrun: false}
+		SenderMail: defaultSenderMail, Dryrun: false, UseFqdn: false}
 	openvpn := &OpenVpn{EasyRsaPath: defaultEasyRsaPath,
 		EasyRsaKeyDirectory: defaultEasyRsaKeyDirectory,
 		OpenVpnServerPath:   defaultOpenVpnServerPath}
